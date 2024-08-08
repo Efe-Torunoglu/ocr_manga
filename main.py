@@ -31,5 +31,18 @@ class MangaOCR(nn.Module):
 
         # Average pool 128 Features into 7x7 Grids, Flatten into linear vector
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
-        nn.Linear(128 * 7 * 7, 1024)
+        self.classifier = nn.Sequential(
+            nn.Linear(128 * 7 * 7, 1024),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(1024, num_classes),   # Num Classes = Number of characters we are trying to recognize
+        )
+
+        # Data Flow
+        def forward(self,x):
+            x = self.features(x)
+            x = self.avgpool(x)
+            x = torch.flatten(x,1)
+            x = self.classifier(x)
+            return x
 
