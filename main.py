@@ -9,22 +9,27 @@ import numpy as np
 class MangaOCR(nn.Module):
     def __int__(self, num_classes):
         super(MangaOCR, self).__init__()
+
+        # Creating Feature Map
         self.features = nn.Sequential(
 
-            # Layer one of the CNN
+            # 32 Feature map
             nn.Conv2d(1,32, kernel_size=3, stride=1, padding=1),    # 2D Convolution
             nn.ReLU(inplace=True),                                  # Relu Model
             nn.MaxPool2d(kernel_size=2, stride=2),                  # Compression Max Mooling
 
-            # Layer two of the CNN
+            # 64 feature map
             nn.Conv2d(32,64, kernel_size=3, stride=1,padding=1),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2),
 
-            # Layer three of the CNN
+            # 128 feature map
             nn.Conv2d(64,128, kernel_size=3, stride=1,padding=1),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2),
-
-
         )
+
+        # Average pool 128 Features into 7x7 Grids, Flatten into linear vector
+        self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
+        nn.Linear(128 * 7 * 7, 1024)
+
